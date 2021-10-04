@@ -6,11 +6,7 @@ import java.util.List;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 
 /**
- * Define uma região e métodos de acesso e verificação.
- * <p>
- * A região pode ser concava ou convexa
- * 
- * @author meslin
+ * @author Gabriel & Matheus
  *
  */
 public class Region
