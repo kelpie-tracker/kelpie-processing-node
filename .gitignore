@@ -27,6 +27,7 @@ hs_err_pid*
 *.classpath
 .project
 org.eclipse*
+MANIFEST.mf
 
 # Kafka
 ./zk-single-kafka-single
