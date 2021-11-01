@@ -19,7 +19,7 @@ public class Database {
         status = "Não conectou...";
         serverName = name;
         mydatabase = database;
-        url = "jdbc:mysql://" + serverName + "/" + mydatabase;
+        url = "jdbc:mysql://" + serverName + ":3306/" + mydatabase;
         username = "root";
         password = userPass;
     }
@@ -28,11 +28,8 @@ public class Database {
         Connection connection = null;
         
         try {
-            String driverName = "com.mysql.jdbc.Driver";
-            Class.forName(driverName);
-            
+            Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(url, username, password);
-
             if (connection != null) {
                 status = ("STATUS--->Conectado com sucesso!");
             } else {

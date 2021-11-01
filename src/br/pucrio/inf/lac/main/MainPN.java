@@ -5,15 +5,19 @@
  */
 package br.pucrio.inf.lac.main;
 
+import java.awt.TextField;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.json.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+
 import br.pucrio.inf.lac.auxiliar.StaticLibrary;
+import br.pucrio.inf.lac.storage.Storage;
 import ckafka.data.Swap;
 import ckafka.data.SwapData;
 import main.java.application.ModelApplication;
@@ -107,8 +111,19 @@ public class MainPN extends ModelApplication {
         
         try {
 			SwapData data = swap.SwapDataDeserialization((byte[]) record.value());
-			String text = new String(data.getMessage(), StandardCharsets.UTF_8);
-	        System.out.println("Mensagem recebida = " + text);
+			String jsonString = new String(data.getMessage(), StandardCharsets.UTF_8);
+	        System.out.println("Mensagem recebida = " + jsonString);
+	        
+	        JSONObject obj = new JSONObject(jsonString);
+	        String id = obj.getString("ID");
+	        String date = obj.getString("date");
+	        float lat = obj.getFloat("latitude");
+	        float lng = obj.getFloat("longitude");
+	        
+	        Storage dbConnection = new Storage();
+	        
+	        dbConnection.AddNewPosition(id, date, String.valueOf(lng), String.valueOf(lat));
+	        
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

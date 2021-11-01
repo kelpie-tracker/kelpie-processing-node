@@ -9,9 +9,9 @@ public class Storage {
     	database = new Database("0.0.0.0", "testedb", "MySql2019!");
     }
     
-    public void AddNewPosition(String id, String time, String longitude, String latitude) {
+    public void AddNewPosition(String id, String data, String longitude, String latitude) {
         String sql = "INSERT INTO Positions" +
-        			 "VALUES (" + id + ","+ time + "," + longitude + "," + latitude + ")";
+        			 "VALUES (" + id + ","+ data + "," + longitude + "," + latitude + ")";
 
     	ResultSet result = database.ExecuteTransaction(sql);
     }

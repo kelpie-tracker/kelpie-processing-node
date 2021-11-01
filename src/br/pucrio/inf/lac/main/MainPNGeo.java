@@ -63,14 +63,14 @@ public class MainPNGeo implements GroupSelection {
 		 * Building the map
 		 */
 		// HTTP agent to request map tiles
-		String httpAgent = System.getProperty("http.agent");
-		if (httpAgent == null) {
-		    httpAgent = "(" + System.getProperty("os.name") + " / " + System.getProperty("os.version") + " / " + System.getProperty("os.arch") + ")";
-		}
-		System.setProperty("http.agent", "GroupDefiner/1.0 " + httpAgent);
-		// create the map
-		this.map = new GeographicMap(this.regionList);
-		this.map.setVisible(true);
+//		String httpAgent = System.getProperty("http.agent");
+//		if (httpAgent == null) {
+//		    httpAgent = "(" + System.getProperty("os.name") + " / " + System.getProperty("os.version") + " / " + System.getProperty("os.arch") + ")";
+//		}
+//		System.setProperty("http.agent", "GroupDefiner/1.0 " + httpAgent);
+//		// create the map
+//		this.map = new GeographicMap(this.regionList);
+//		this.map.setVisible(true);
 		
 		// create an empty inspector list
 		this.inspectorList = new ArrayList<Inspector>();
