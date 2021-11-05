@@ -10,10 +10,10 @@ public class Storage {
     }
     
     public void AddNewPosition(String id, String data, String longitude, String latitude) {
-        String sql = "INSERT INTO Positions" +
-        			 "VALUES (" + id + ","+ data + "," + longitude + "," + latitude + ")";
+        String sql = "INSERT INTO Positions (id, date, longitude, latitude)" +
+        			 "VALUES ('" + id + "','"+ data + "','" + longitude + "','" + latitude + "')";
 
-    	ResultSet result = database.ExecuteTransaction(sql);
+    	boolean result = database.ExecuteTransaction(sql);
     }
     
     

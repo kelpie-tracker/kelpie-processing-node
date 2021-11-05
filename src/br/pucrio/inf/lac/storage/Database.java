@@ -28,7 +28,8 @@ public class Database {
         Connection connection = null;
         
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+//            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(url, username, password);
             if (connection != null) {
                 status = ("STATUS--->Conectado com sucesso!");
@@ -64,15 +65,16 @@ public class Database {
         return Database.getConexaoMySQL();
     }
     
-    public static ResultSet ExecuteTransaction(String query) {
+    public static boolean ExecuteTransaction(String query) {
     	Statement stmt;
 		try {
 			stmt = Database.getConexaoMySQL().createStatement();
-	    	return stmt.executeQuery(query);
+			return stmt.execute(query);
+//	    	return stmt.executeQuery(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return false;
     }
 }
 
