@@ -20,5 +20,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="dependencies/ck-core.jar"/>
 	<classpathentry kind="lib" path="dependencies/Exchange-Data-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="dependencies/json-20210307.jar"/>
+	<classpathentry kind="lib" path="dependencies/mysql-connector-java-8.0.27.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
