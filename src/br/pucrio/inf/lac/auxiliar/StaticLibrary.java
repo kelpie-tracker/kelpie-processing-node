@@ -1,5 +1,6 @@
 package br.pucrio.inf.lac.auxiliar;
 
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -174,7 +175,7 @@ public class StaticLibrary {
 	 */
 	public static Region readRegion(String filename, int regionNumber) {
 		// reads a region. A region is described by an X, Y coordinate per line
-		Region region = new Region();
+		Region region = new br.pucrio.inf.lac.model.Region();
 		region.setNumber(regionNumber);
 //		System.err.println("[" + this.getClass().getName() + ".SelecionaGrupo] " + " criando região número " + region.getNumero());
 		BufferedReader br = null;
