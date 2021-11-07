@@ -7,6 +7,7 @@ package br.pucrio.inf.lac.main;
 
 import java.awt.TextField;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import br.pucrio.inf.lac.auxiliar.StaticLibrary;
+import br.pucrio.inf.lac.controller.FilterCEP;
+import br.pucrio.inf.lac.model.Fence;
 import br.pucrio.inf.lac.storage.Storage;
+import br.pucrio.inf.lac.model.MyRunnable;
 import ckafka.data.Swap;
 import ckafka.data.SwapData;
 import main.java.application.ModelApplication;
@@ -26,27 +30,20 @@ import main.java.application.ModelApplication;
  * @author Gabriel & Matheus
  *
  */
-public class MainPN extends ModelApplication {
-	private Swap swap;
-	private ObjectMapper objectMapper;
-
+public class MainPN {
+	private static Storage db;
 	/**
 	 * Constructor
 	 */
 	public MainPN() {		
-        this.objectMapper = new ObjectMapper();
-        this.swap = new Swap(objectMapper);
-	}
 
-	/**
-	 * Main function
-	 * @param args command line arguments
-	 */
+	}
+	
 	public static void main(String[] args) {
     	// creating missing environment variable
 		Map<String,String> env = new HashMap<String, String>();
 		env.putAll(System.getenv());
-		if(System.getenv("app.consumer.topics") == null) 			env.put("app.consumer.topics", "AppModel");
+		if(System.getenv("app.consumer.topics") == null) 			env.put("app.consumer.topics", "GroupReportTopic");
 		if(System.getenv("app.consumer.auto.offset.reset") == null) env.put("app.consumer.auto.offset.reset", "latest");
 		if(System.getenv("app.consumer.bootstrap.servers") == null) env.put("app.consumer.bootstrap.servers", "127.0.0.1:9092");
 		if(System.getenv("app.consumer.group.id") == null) 			env.put("app.consumer.group.id", "gw-consumer");
@@ -60,72 +57,14 @@ public class MainPN extends ModelApplication {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		MainPN vaiFazer = new MainPN();
-		try {
-			vaiFazer.wait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		// get the geographic areas
+		db = new Storage();
+		ArrayList<Fence> resultGeo = db.GetGeoFences();
+		for(int i=0; i<resultGeo.size(); i++){
+			Fence f = resultGeo.get(i);
+			Runnable r = new MyRunnable(i,f.GetPosUp(),f.GetPosDown(),f.GetPosRight(),f.GetPosLeft());
+			new Thread(r).start();
+        }		
 	}
 
-	/**
-	 * Sends a unicast message
-	 * @param keyboard
-	 */
-	private void sendUnicastMessage(String uuid, String messageText) {
-		// Create and send the message
-		try {
-			sendRecord(createRecord("PrivateMessageTopic", uuid, swap.SwapDataSerialization(createSwapData(messageText))));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-            logger.error("Error SendPrivateMessage", e);
-		}
-	}
-
-	/**
-	 * sendGroupcastMessage<br>
-	 * Sends a groupcast message<br>
-	 * @param keyboard
-	 */
-	private void sendGroupcastMessage(String group, String messageText) {		
-		try {
-			sendRecord(createRecord("GroupMessageTopic", group, swap.SwapDataSerialization(createSwapData(messageText))));
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error("Error SendGroupCastMessage", e);
-		}
-	}
-
-    /**
-     * Call back
-     */
-	@SuppressWarnings("rawtypes")
-	@Override
-	public void recordReceived(ConsumerRecord record) {
-		// value possui o conteúdo transmitido e recebido em byte[]
-        this.logger.debug("Record Received " + record.value().toString());
-        System.out.println(String.format("Mensagem recebida de %s", record.key()));	// String com UUID do remetente
-        
-        try {
-			SwapData data = swap.SwapDataDeserialization((byte[]) record.value());
-			String jsonString = new String(data.getMessage(), StandardCharsets.UTF_8);
-	        System.out.println("Mensagem recebida = " + jsonString);
-	        
-	        JSONObject obj = new JSONObject(jsonString);
-	        String id = obj.getString("ID");
-	        String date = obj.getString("date");
-	        float lat = obj.getFloat("latitude");
-	        float lng = obj.getFloat("longitude");
-	        
-	        Storage dbConnection = new Storage();
-	        
-	        dbConnection.AddNewPosition(id, date, String.valueOf(lng), String.valueOf(lat));
-	        
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

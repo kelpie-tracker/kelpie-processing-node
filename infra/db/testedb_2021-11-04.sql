@@ -28,24 +28,45 @@ DROP TABLE IF EXISTS `Positions`;
 CREATE TABLE `Positions` (
   `id` varchar(255) DEFAULT NULL,
   `date` varchar(255) DEFAULT NULL,
-  `longitude` varchar(255) DEFAULT NULL,
-  `latitude` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `longitude` FLOAT(24) DEFAULT NULL,
+  `latitude` FLOAT(24) DEFAULT NULL
+);
 
 LOCK TABLES `Positions` WRITE;
 /*!40000 ALTER TABLE `Positions` DISABLE KEYS */;
 
 INSERT INTO `Positions` (`id`, `date`, `longitude`, `latitude`)
 VALUES
-	('1111','2021-11-04','-23.0208077','-43.4683931'),
-	('1112','2021-11-04','-23.1208077','-43.4683931'),
-	('1111','2021-11-04','-23.0208077','-43.4683931'),
-	('1112','2021-11-04','-23.0008077','-41.4683931');
-
+	('1111','2021-11-04',-23.0208077,-43.4683931),
+	('1112','2021-11-04',-23.1208077,-43.4683931),
+	('1111','2021-11-04',-23.0208077,-43.4683931),
+	('1112','2021-11-04',-23.0008077,-41.4683931);
+	
 /*!40000 ALTER TABLE `Positions` ENABLE KEYS */;
 UNLOCK TABLES;
 
 
+# Dump of table Fences
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `Fences`;
+
+CREATE TABLE `Fences` (
+  `up` FLOAT(24) DEFAULT NULL,
+  `right` FLOAT(24) DEFAULT NULL,
+  `botton` FLOAT(24) DEFAULT NULL,
+  `left` FLOAT(24) DEFAULT NULL
+);
+
+LOCK TABLES `Fences` WRITE;
+/*!40000 ALTER TABLE `Positions` DISABLE KEYS */;
+
+INSERT INTO `Fences`(`up`, `right`, `bottom`, `left`)
+VALUES
+	(-22.927271836395280, -43.17771782650461, -22.946273929306827, -43.19634344082100);
+
+/*!40000 ALTER TABLE `Positions` ENABLE KEYS */;
+UNLOCK TABLES;
 
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

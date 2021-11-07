@@ -55,7 +55,6 @@ services:
       - kafka1
 
   db:
-    platform: linux/x86_64
     hostname: db
     image: mysql:5.7
     environment:

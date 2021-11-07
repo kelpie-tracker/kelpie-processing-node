@@ -1,10 +1,11 @@
-package br.pucrio.inf.lac.main;
+package br.pucrio.inf.lac.controller;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.json.JSONObject;
 
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPAdministrator;
@@ -17,7 +18,10 @@ import com.espertech.esper.client.UpdateListener;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.pucrio.inf.lac.auxiliar.StaticLibrary;
+import br.pucrio.inf.lac.model.Fence;
 import br.pucrio.inf.lac.model.Inspector;
+import br.pucrio.inf.lac.storage.Database;
+import br.pucrio.inf.lac.storage.Storage;
 import ckafka.data.Swap;
 import ckafka.data.SwapData;
 import main.java.application.ModelApplication;
@@ -26,59 +30,39 @@ import main.java.application.ModelApplication;
  * @author Gabriel & Matheus
  *
  */
-public class MainPNCEP extends ModelApplication  implements UpdateListener {
+public class FilterCEP extends ModelApplication  implements UpdateListener {
 	private Swap swap;
 	/** CEP runtime object */
 	private EPRuntime cepRT;
-
+	private static Storage dbConnection;
+	private float up;
+	private float down;
+	private float right;
+	private float left;
 	/**
 	 * Constructor
 	 */
-	public MainPNCEP() {
+	public FilterCEP(float pos_y, float in_pos_y, float pos_x, float in_pos_x) {
 		this.swap = new Swap(new ObjectMapper());
-
+		dbConnection = new Storage();
+		// set CEP fence values
+		this.up = pos_y;
+		this.down = in_pos_y;
+		this.right = pos_x;
+		this.left = in_pos_x;
 		// create CEP configuration and engine
 		Configuration cepConfig = new Configuration();
 		cepConfig.addEventType("Inspector", Inspector.class.getName());
 		EPServiceProvider cep = EPServiceProviderManager.getProvider("myCEPEngine", cepConfig);
 		cepRT = cep.getEPRuntime();
 		EPAdministrator cepAdm = cep.getEPAdministrator();
-		// up right    = -22.927271836395280, -43.17771782650461
-		// botton left = -22.946273929306827, -43.19634344082100
 		String cepStatement = "select * from Inspector "
-				     + "having Inspector.latitude > -22.92727183639528 "
-				     + "or Inspector.longitude    > -43.177717826504610 "
-				     + "or Inspector.latitude     < -22.946273929306827 "
-				     + "or Inspector.longitude    < -43.19634344082100";
+				     + "having Inspector.latitude > "+ this.up 
+				     + "or Inspector.longitude    > "+ this.right
+				     + "or Inspector.latitude     < "+ this.down
+				     + "or Inspector.longitude    < "+ this.left;
 		EPStatement cepInspector = cepAdm.createEPL(cepStatement);
 		cepInspector.addListener(this);
-	}
-
-	/**
-	 * Main function
-	 * 
-	 * @param args command line arguments
-	 */
-	public static void main(String[] args) {
-    	// creating missing environment variable
-		Map<String,String> env = new HashMap<String, String>();
-		env.putAll(System.getenv());
-		if(System.getenv("app.consumer.topics") == null) 			env.put("app.consumer.topics", "GroupReportTopic");
-		if(System.getenv("app.consumer.auto.offset.reset") == null) env.put("app.consumer.auto.offset.reset", "latest");
-		if(System.getenv("app.consumer.bootstrap.servers") == null) env.put("app.consumer.bootstrap.servers", "127.0.0.1:9092");
-		if(System.getenv("app.consumer.group.id") == null) 			env.put("app.consumer.group.id", "gw-consumer");
-		if(System.getenv("app.producer.bootstrap.servers") == null) env.put("app.producer.bootstrap.servers", "127.0.0.1:9092");
-		if(System.getenv("app.producer.retries") == null) 			env.put("app.producer.retries", "3");
-		if(System.getenv("app.producer.enable.idempotence") == null)env.put("app.producer.enable.idempotence", "true");
-		if(System.getenv("app.producer.linger.ms") == null) 		env.put("app.producer.linger.ms", "1");
-		if(System.getenv("app.producer.acks") == null) 				env.put("app.producer.acks", "all");
-		try {
-			StaticLibrary.setEnv(env);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		new MainPNCEP();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -89,7 +73,12 @@ public class MainPNCEP extends ModelApplication  implements UpdateListener {
 			SwapData data = swap.SwapDataDeserialization((byte[]) record.value());
 			Double latitude = Double.valueOf(String.valueOf(data.getContext().get("latitude")));
 			Double longitude = Double.valueOf(String.valueOf(data.getContext().get("longitude")));
+	        String id = String.valueOf(data.getContext().get("ID"));
+	        String date = String.valueOf(data.getContext().get("date"));
 			System.out.println(String.format("Coordenadas = %f (lat), %f (long)", latitude, longitude));
+			//	store new position in database        
+	        dbConnection.AddNewPosition(id, date, latitude, longitude);
+	        // generate CEP inspector
 			generateInspectorLocationCEPEvent(new Inspector(new Date(), latitude, longitude, (String)record.key()));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -115,12 +104,10 @@ public class MainPNCEP extends ModelApplication  implements UpdateListener {
 	 * @param inspectort an inspector with lat/long and UUID
 	 */
 	private void generateInspectorLocationCEPEvent(Inspector inspector) {
-		// up right    = -22.927271836395280, -43.17771782650461
-		// botton left = -22.946273929306827, -43.19634344082100
-		if(inspector.getLatitude()  > -22.92727183639528  ||
-		   inspector.getLongitude() > -43.177717826504610 ||
-		   inspector.getLatitude()  < -22.946273929306827  ||
-		   inspector.getLongitude() < -43.19634344082100)
+		if(inspector.getLatitude()  > this.up  ||
+		   inspector.getLongitude() > this.right ||
+		   inspector.getLatitude()  < this.down  ||
+		   inspector.getLongitude() < this.left)
 			logger.info("Deveria disparar um alerta agora para " + inspector.getUuid());
 		cepRT.sendEvent(inspector);
 	}

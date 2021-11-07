@@ -65,12 +65,22 @@ public class Database {
         return Database.getConexaoMySQL();
     }
     
-    public static boolean ExecuteTransaction(String query) {
+    public static ResultSet ExecuteSelectTransaction(String query) {
+    	Statement stmt;
+		try {
+			stmt = Database.getConexaoMySQL().createStatement();
+	    	return stmt.executeQuery(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+    }
+    
+    public static boolean ExecuteInsertTransaction(String query) {
     	Statement stmt;
 		try {
 			stmt = Database.getConexaoMySQL().createStatement();
 			return stmt.execute(query);
-//	    	return stmt.executeQuery(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
