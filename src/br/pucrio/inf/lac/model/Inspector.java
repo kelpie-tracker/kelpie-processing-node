@@ -1,6 +1,3 @@
-/**
- * 
- */
 package br.pucrio.inf.lac.model;
 
 import java.text.ParseException;
