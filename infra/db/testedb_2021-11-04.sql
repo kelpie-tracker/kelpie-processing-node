@@ -32,7 +32,7 @@ CREATE TABLE `Positions` (
   `latitude` FLOAT(24) DEFAULT NULL
 );
 
-LOCK TABLES `Positions` WRITE;
+-- LOCK TABLES `Positions` WRITE;
 /*!40000 ALTER TABLE `Positions` DISABLE KEYS */;
 
 INSERT INTO `Positions` (`id`, `date`, `longitude`, `latitude`)
@@ -54,11 +54,11 @@ DROP TABLE IF EXISTS `Fences`;
 CREATE TABLE `Fences` (
   `up` FLOAT(24) DEFAULT NULL,
   `right` FLOAT(24) DEFAULT NULL,
-  `botton` FLOAT(24) DEFAULT NULL,
+  `bottom` FLOAT(24) DEFAULT NULL,
   `left` FLOAT(24) DEFAULT NULL
 );
 
-LOCK TABLES `Fences` WRITE;
+-- LOCK TABLES `Fences` WRITE;
 /*!40000 ALTER TABLE `Positions` DISABLE KEYS */;
 
 INSERT INTO `Fences`(`up`, `right`, `bottom`, `left`)
