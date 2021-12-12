@@ -13,9 +13,9 @@ public class Storage {
     	database = new Database("0.0.0.0", "kelpie", "teste123");
     }
     
-    public void AddNewPosition(String id, String data, Double latitude, Double longitude) {
-        String sql = "INSERT INTO Positions (id, date, longitude, latitude)" +
-        			 "VALUES ('" + id + "','"+ data + "'," + latitude + "," + longitude + ")";
+    public void AddNewPosition(String id, Double latitude, Double longitude) {
+        String sql = "INSERT INTO Positions (id, longitude, latitude)" +
+        			 "VALUES ('" + id + "'," + latitude + "," + longitude + ")";
 
     	boolean result = database.ExecuteInsertTransaction(sql);
     }

@@ -77,7 +77,7 @@ public class FilterCEP extends ModelApplication  implements UpdateListener {
 	        String date = String.valueOf(data.getContext().get("date"));
 			System.out.println(String.format("Coordenadas = %f (lat), %f (long)", latitude, longitude));
 			//	store new position in database        
-	        dbConnection.AddNewPosition(id, date, latitude, longitude);
+	        dbConnection.AddNewPosition(id, latitude, longitude);
 	        // generate CEP inspector
 			generateInspectorLocationCEPEvent(new Inspector(new Date(), latitude, longitude, (String)record.key()));
 		} catch (Exception e) {
