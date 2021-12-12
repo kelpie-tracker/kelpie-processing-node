@@ -28,11 +28,3 @@ environment:
 	
 login-docker:
 	docker login registry.gitlab.com
-
-## database migration
-migrate-db:
-ifndef ENV
-	$(eval ENV := local)
-endif
-	@echo "${blue}Iniciando a migração do banco de dados ${yellow}${DATABASE_NAME}${clear} com Ambiente ${yellow}${ENV}${clear}"
-	@db-migrate up --config infra/db/database.json --env=${ENV}

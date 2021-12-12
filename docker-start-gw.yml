@@ -53,12 +53,3 @@ services:
       gw.poolsize: 1000
     depends_on:
       - kafka1
-
-  db:
-    hostname: db
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: "MySql2019!"
-      MYSQL_DATABASE: "testedb"
-    ports:
-      - "3306:3306"

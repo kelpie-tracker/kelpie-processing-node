@@ -10,7 +10,7 @@ public class Storage {
 	Database database;
 	
     public Storage() {
-    	database = new Database("0.0.0.0", "testedb", "MySql2019!");
+    	database = new Database("0.0.0.0", "kelpie", "teste123");
     }
     
     public void AddNewPosition(String id, String data, Double latitude, Double longitude) {
